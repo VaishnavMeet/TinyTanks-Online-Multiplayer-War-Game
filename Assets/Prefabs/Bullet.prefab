@@ -169,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   lifeTime: 2
-  damage: 50
+  damage: 25
   animator: {fileID: 6565583560538683243}
 --- !u!95 &6565583560538683243
 Animator:
