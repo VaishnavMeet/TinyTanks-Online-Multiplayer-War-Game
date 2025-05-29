@@ -17,10 +17,13 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        healthBarInstance = Instantiate(healthBarPrefab, transform.parent);
+        // Instantiate health bar and set it as a child of this object
+        healthBarInstance = Instantiate(healthBarPrefab);
+        healthBarInstance.transform.SetParent(transform);               // Parent to the object
+        healthBarInstance.transform.localPosition = new Vector3(0, 0.5f); 
         healthBarImage = healthBarInstance.GetComponentInChildren<Image>();
 
-        healthBarInstance.transform.position = transform.position + new Vector3(0, 1f, 0); 
+        // Get the script containing 'health' and 'maxHealth'
         targetScript = GetComponent<MonoBehaviour>();
         if (targetScript == null) return;
 
@@ -40,6 +43,5 @@ public class HealthBar : MonoBehaviour
         healthValue = (float)healthField.GetValue(targetScript);
         float fill = Mathf.Clamp01(healthValue / maxValue);
         healthBarImage.fillAmount = fill;
-        healthBarInstance.transform.position = transform.position + new Vector3(0, 1f, 0);
     }
 }
