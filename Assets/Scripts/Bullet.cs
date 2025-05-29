@@ -29,7 +29,11 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<TankController2D>().health -= damage;
-            Debug.Log(collision.gameObject.GetComponent<TankController2D>().health);
+        }
+        if(collision.gameObject.tag == "Ai")
+        {
+            collision.gameObject.GetComponent<AIEnemyShooter>().health -= damage;
+            Debug.Log(collision.gameObject.GetComponent<AIEnemyShooter>().health);
         }
         audioSource.enabled = true;
         rb.linearVelocity = Vector2.zero;

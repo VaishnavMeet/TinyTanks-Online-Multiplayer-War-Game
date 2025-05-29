@@ -176,11 +176,5 @@ public class TankController2D : MonoBehaviour
         }
     }
 
-    public IEnumerator RestartSpeed()
-    {
-        Debug.Log(moveSpeed);
-        yield return new WaitForSeconds(15f);
-        moveSpeed = 3;
-        Debug.Log(moveSpeed);
-    }
+    
 }
