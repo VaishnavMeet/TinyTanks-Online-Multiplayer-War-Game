@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TankController2D : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class TankController2D : MonoBehaviour
     [Header("Feactures")]
     public float maxHealth = 200f;
     public float health = 200f;
+    public Image swapeImage;
+    public PickUp currentPickup;
 
     [Header("Firing Assests")]
     public GameObject Bullet;
@@ -150,5 +153,19 @@ public class TankController2D : MonoBehaviour
      Quaternion.Euler(0, 0, barrelPoint.eulerAngles.z + 180f));
         yield return new WaitForSeconds(0.1f);
         FireFlams.SetActive(false);
+    }
+
+
+    public void OnSwapButtonClicked()
+    {
+        if (currentPickup != null)
+        {
+            GameObject temp= Bullet;
+            Bullet = currentPickup.prefab;
+            currentPickup.prefab = temp;
+            swapeImage.sprite=currentPickup.prefab.GetComponentInChildren<SpriteRenderer>().sprite;
+            currentPickup.GetComponent<SpriteRenderer>().sprite=swapeImage.sprite;
+            Debug.Log("Bullet swapped to: " + Bullet.name);
+        }
     }
 }

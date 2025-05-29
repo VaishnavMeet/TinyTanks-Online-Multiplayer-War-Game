@@ -1,16 +1,42 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PIckUp : MonoBehaviour
+public class PickUp : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public GameObject prefab; // This is the bullet or item prefab
+
+    private void Start()
     {
-        
+        GetComponent<SpriteRenderer>().sprite=prefab.GetComponentInChildren<SpriteRenderer>().sprite;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.CompareTag("Player"))
+        {
+            TankController2D player = collision.GetComponent<TankController2D>();
+
+            // Show image
+            player.swapeImage.color = new Color(1, 1, 1, 1); // Fully visible
+            player.swapeImage.sprite = GetComponent<SpriteRenderer>().sprite;
+
+            // Store this pickup reference so button knows what to swap
+            player.currentPickup = this;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            TankController2D player = collision.GetComponent<TankController2D>();
+
+            // Hide image
+            player.swapeImage.color = new Color(1, 1, 1, 0); // Fully transparent
+            player.swapeImage.sprite = null;
+
+            // Clear reference
+            player.currentPickup = null;
+        }
     }
 }
