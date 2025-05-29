@@ -15619,7 +15619,7 @@ MonoBehaviour:
   bulletFlamsh: {fileID: 577676954}
   firePoint: {fileID: 1626204543}
   robotBody: {fileID: 1390498028}
-  shootRange: 10
+  shootRange: 5
   shootInterval: 1.5
   bulletSpeed: 10
   playerLayer:

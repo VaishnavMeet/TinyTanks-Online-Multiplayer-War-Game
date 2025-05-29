@@ -47,7 +47,7 @@ public class AIEnemyShooter : MonoBehaviour
                 rb.linearVelocity = direction * bulletSpeed;
                 bulletFlamsh.SetActive(true);
                 yield return new WaitForSeconds(0.2f);
-                bulletFlamsh.SetActive(true);
+                bulletFlamsh.SetActive(false);
 
             }
 

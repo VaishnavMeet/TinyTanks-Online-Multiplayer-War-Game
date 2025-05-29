@@ -12,10 +12,7 @@ public class HealthContainer : MonoBehaviour
     private Coroutine healthCoroutine;
 
 
-    private void Update()
-    {
-        StartCoroutine(SelfHealing());
-    }
+    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -36,6 +33,7 @@ public class HealthContainer : MonoBehaviour
             {
                 StopCoroutine(healthCoroutine);
                 healthCoroutine = null;
+                StartCoroutine(SelfHealing());
             }
         }
     }
@@ -60,7 +58,8 @@ public class HealthContainer : MonoBehaviour
 
     IEnumerator SelfHealing()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         if(health<maxHealth) health += 1;
+        StartCoroutine(SelfHealing());
     }
 }
