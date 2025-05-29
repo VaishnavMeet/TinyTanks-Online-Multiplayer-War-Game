@@ -26,12 +26,13 @@ public class TankController2D : MonoBehaviour
     public bool isFire=false;
     public bool isReloading=false;
     public float timeout = 1f;
-    public float damage = 10f;
+    bool isFiveShot=false;
 
     [Header("Sound Effects")]
     public AudioSource audioSource;
     public AudioClip ride;
     public AudioClip fire;
+    bool wasPaused=false;
 
 
     void Start()
@@ -90,12 +91,26 @@ public class TankController2D : MonoBehaviour
                     if (audioSource.isPlaying)
                     {
                         audioSource.Pause() ;
+                        wasPaused= true ;
                     }
                     if (!audioSource.isPlaying)
                     {
                         audioSource.PlayOneShot(fire);
-                       audioSource.UnPause();
+                        if (wasPaused)
+                        {
+                            audioSource.UnPause();
+                            wasPaused= false ;
+                        }
                         
+                    }
+                    timeout = Bullet.GetComponent<Bullet>().reloadingTimeout;
+                    if(Bullet.GetComponent<FiveShotGeneration>()!=null)
+                    {
+                        isFiveShot= true ;
+                    }
+                    else
+                    {
+                        isFiveShot = false ;
                     }
                     StartCoroutine(ShootAndRealoding(timeout));
                 }
@@ -106,19 +121,34 @@ public class TankController2D : MonoBehaviour
 
     IEnumerator ShootAndRealoding(float timeout)
     {
+        if (isFiveShot)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                yield return StartCoroutine(SingleShoot()); // Wait for each shot to finish
+                yield return new WaitForSeconds(0.1f); // Optional delay between shots
+            }
+        }
+        else
+        {
+            StartCoroutine(SingleShoot());
+        }
+
+
+        yield return new WaitForSeconds(timeout);
+        isReloading= false;
+    }
+
+    IEnumerator SingleShoot()
+    {
         isFire = false;
-        isReloading=true;
+        isReloading = true;
         FireFlams.SetActive(true);
         GameObject bullet = Instantiate(
      Bullet,
      FirePoint.position,
-     Quaternion.Euler(0, 0, barrelPoint.eulerAngles.z + 180f)
- );
-        bullet.GetComponent<Bullet>().damage=damage;
-
+     Quaternion.Euler(0, 0, barrelPoint.eulerAngles.z + 180f));
         yield return new WaitForSeconds(0.1f);
         FireFlams.SetActive(false);
-        yield return new WaitForSeconds(timeout);
-        isReloading= false;
     }
 }

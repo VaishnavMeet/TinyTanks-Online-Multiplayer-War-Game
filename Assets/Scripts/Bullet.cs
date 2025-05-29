@@ -5,6 +5,7 @@ public class Bullet : MonoBehaviour
 {
     public float speed = 1f;
     public float lifeTime = 1f;
+    public float reloadingTimeout = 1f;
     public float damage ;
     private Rigidbody2D rb;
     public Animator animator;
