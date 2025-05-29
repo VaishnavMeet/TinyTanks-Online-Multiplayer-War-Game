@@ -163,9 +163,24 @@ public class TankController2D : MonoBehaviour
             GameObject temp= Bullet;
             Bullet = currentPickup.prefab;
             currentPickup.prefab = temp;
-            swapeImage.sprite=currentPickup.prefab.GetComponentInChildren<SpriteRenderer>().sprite;
-            currentPickup.GetComponent<SpriteRenderer>().sprite=swapeImage.sprite;
-            Debug.Log("Bullet swapped to: " + Bullet.name);
+            if (currentPickup.prefab.GetComponentInChildren<SpriteRenderer>() != null)
+            {
+                swapeImage.sprite = currentPickup.prefab.GetComponentInChildren<SpriteRenderer>().sprite;
+            }
+            else
+            {
+                swapeImage.sprite = currentPickup.prefab.GetComponent<SpriteRenderer>().sprite;
+            }
+                currentPickup.GetComponent<SpriteRenderer>().sprite = swapeImage.sprite;
+            
         }
+    }
+
+    public IEnumerator RestartSpeed()
+    {
+        Debug.Log(moveSpeed);
+        yield return new WaitForSeconds(15f);
+        moveSpeed = 3;
+        Debug.Log(moveSpeed);
     }
 }

@@ -7,7 +7,14 @@ public class PickUp : MonoBehaviour
 
     private void Start()
     {
-        GetComponent<SpriteRenderer>().sprite=prefab.GetComponentInChildren<SpriteRenderer>().sprite;
+        if (prefab.GetComponentInChildren<SpriteRenderer>() != null)
+        {
+        GetComponent<SpriteRenderer>().sprite= prefab.GetComponentInChildren<SpriteRenderer>().sprite;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().sprite = prefab.GetComponent<SpriteRenderer>().sprite;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
