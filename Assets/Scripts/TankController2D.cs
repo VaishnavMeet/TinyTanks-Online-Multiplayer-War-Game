@@ -22,6 +22,7 @@ public class TankController2D : MonoBehaviour
     public bool isFire=false;
     public bool isReloading=false;
     public float timeout = 1f;
+    public float damage = 10f;
 
     [Header("Sound Effects")]
     public AudioSource audioSource;
@@ -109,7 +110,7 @@ public class TankController2D : MonoBehaviour
      FirePoint.position,
      Quaternion.Euler(0, 0, barrelPoint.eulerAngles.z + 180f)
  );
-
+        bullet.GetComponent<Bullet>().damage=damage;
 
         yield return new WaitForSeconds(0.1f);
         FireFlams.SetActive(false);

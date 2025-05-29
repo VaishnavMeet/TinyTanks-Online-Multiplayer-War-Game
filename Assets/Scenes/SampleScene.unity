@@ -145,7 +145,7 @@ Transform:
   m_GameObject: {fileID: 63142591}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.35, z: 0}
+  m_LocalPosition: {x: 0, y: -0.63, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15383,6 +15383,7 @@ MonoBehaviour:
   isFire: 0
   isReloading: 0
   timeout: 1
+  damage: 10
   audioSource: {fileID: 0}
   ride: {fileID: 8300000, guid: 1beb1c8ff9fb4ad4998030d2cba3c0e8, type: 3}
   fire: {fileID: 8300000, guid: 33ad792fca55ab54b8b47c1b3f50eb15, type: 3}

@@ -1,12 +1,13 @@
+using System.Collections;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
     public float speed = 4f;
     public float lifeTime = 1f;
-    public float damage = 10;
+    public float damage ;
     private Rigidbody2D rb;
-
+    public Animator animator;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -14,21 +15,27 @@ public class Bullet : MonoBehaviour
         // Move the bullet forward in its facing direction (up)
         rb.linearVelocity = transform.up * speed;
 
-        // Destroy the bullet after a while
-        Destroy(gameObject, lifeTime);
+      
     }
 
-    // Use this if your bullet has a trigger collider
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        Debug.Log("collision with: " + other.name);
-        Destroy(gameObject);
-    }
+    
 
     // Use this if your bullet has a non-trigger collider
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("collision with: " + collision.gameObject.name);
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.freezeRotation = true;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        GetComponent<CircleCollider2D>().enabled = false;
+        StartCoroutine(DestoryTheBullte());
+        animator.SetBool("Exposion", true);
+    }
+
+    IEnumerator DestoryTheBullte()
+    {
+        yield return new WaitForSeconds(0.30f);
         Destroy(gameObject);
     }
+
 }
