@@ -3,7 +3,10 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Image healthBar; // Assign the Image component (not the GameObject)
+    public GameObject healthBarPrefab; // Assign the prefab in Inspector
+
+    private Image healthBarImage;      // The instantiated Image component
+    private GameObject healthBarInstance;
 
     private System.Reflection.FieldInfo healthField;
     private System.Reflection.FieldInfo maxHealthField;
@@ -14,11 +17,13 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        // Get the script with the 'health' and 'maxHealth' fields (e.g., TankController2D)
+        healthBarInstance = Instantiate(healthBarPrefab, transform.parent);
+        healthBarImage = healthBarInstance.GetComponentInChildren<Image>();
+
+        healthBarInstance.transform.position = transform.position + new Vector3(0, 1f, 0); 
         targetScript = GetComponent<MonoBehaviour>();
         if (targetScript == null) return;
 
-        // Use reflection to access 'health' and 'maxHealth'
         healthField = targetScript.GetType().GetField("health");
         maxHealthField = targetScript.GetType().GetField("maxHealth");
 
@@ -30,14 +35,11 @@ public class HealthBar : MonoBehaviour
 
     private void Update()
     {
-        if (targetScript == null || healthField == null || maxHealthField == null) return;
+        if (targetScript == null || healthField == null || maxHealthField == null || healthBarImage == null) return;
 
         healthValue = (float)healthField.GetValue(targetScript);
         float fill = Mathf.Clamp01(healthValue / maxValue);
-
-        if (healthBar != null)
-        {
-            healthBar.fillAmount = fill;
-        }
+        healthBarImage.fillAmount = fill;
+        healthBarInstance.transform.position = transform.position + new Vector3(0, 1f, 0);
     }
 }
