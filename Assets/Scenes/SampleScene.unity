@@ -15576,13 +15576,12 @@ MonoBehaviour:
   barrel: {fileID: 173054935}
   maxHealth: 200
   health: 200
-  Bullet: {fileID: 7941458109653922241, guid: 2d69aafebf535fe44bb4a92dc5a36154, type: 3}
+  Bullet: {fileID: 7941458109653922241, guid: d1de04e55f0f7b94cb35e4967a7a104a, type: 3}
   FirePoint: {fileID: 63142592}
   FireFlams: {fileID: 63142591}
   isFire: 0
   isReloading: 0
   timeout: 1
-  damage: 10
   audioSource: {fileID: 0}
   ride: {fileID: 8300000, guid: 1beb1c8ff9fb4ad4998030d2cba3c0e8, type: 3}
   fire: {fileID: 8300000, guid: 33ad792fca55ab54b8b47c1b3f50eb15, type: 3}
