@@ -8,13 +8,14 @@ public class Bullet : MonoBehaviour
     public float damage ;
     private Rigidbody2D rb;
     public Animator animator;
+    AudioSource audioSource;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
         // Move the bullet forward in its facing direction (up)
         rb.linearVelocity = transform.up * speed;
-
+        audioSource = GetComponent<AudioSource>();
       
     }
 
@@ -23,6 +24,12 @@ public class Bullet : MonoBehaviour
     // Use this if your bullet has a non-trigger collider
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.tag == "Player")
+        {
+            collision.gameObject.GetComponent<TankController2D>().health -= damage;
+            Debug.Log(collision.gameObject.GetComponent<TankController2D>().health);
+        }
+        audioSource.enabled = true;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         rb.freezeRotation = true;

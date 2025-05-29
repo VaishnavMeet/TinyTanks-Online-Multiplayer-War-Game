@@ -15,6 +15,9 @@ public class TankController2D : MonoBehaviour
     
     private Rigidbody2D rb;
 
+    [Header("Feactures")]
+    public float health = 200f;
+
     [Header("Firing Assests")]
     public GameObject Bullet;
     public Transform FirePoint;

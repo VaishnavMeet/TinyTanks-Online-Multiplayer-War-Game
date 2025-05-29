@@ -15337,7 +15337,7 @@ GameObject:
   - component: {fileID: 695697101}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15377,6 +15377,7 @@ MonoBehaviour:
   tankBody: {fileID: 1549399648}
   barrelPoint: {fileID: 571354470}
   barrel: {fileID: 173054935}
+  health: 200
   Bullet: {fileID: 7941458109653922241, guid: 22c6efc5b2af0ff47ab59046450c642c, type: 3}
   FirePoint: {fileID: 63142592}
   FireFlams: {fileID: 63142591}
@@ -15436,9 +15437,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 30
+  MaxDistance: 20
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -15471,7 +15472,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
