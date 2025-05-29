@@ -11,6 +11,12 @@ public class HealthContainer : MonoBehaviour
     private Collider2D currentCollider;
     private Coroutine healthCoroutine;
 
+
+    private void Update()
+    {
+        StartCoroutine(SelfHealing());
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -50,5 +56,11 @@ public class HealthContainer : MonoBehaviour
 
             yield return new WaitForSeconds(1f);
         }
+    }
+
+    IEnumerator SelfHealing()
+    {
+        yield return new WaitForSeconds(1f);
+        if(health<maxHealth) health += 1;
     }
 }
