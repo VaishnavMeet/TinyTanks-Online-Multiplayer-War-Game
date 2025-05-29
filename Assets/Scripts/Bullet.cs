@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 4f;
+    public float speed = 1f;
     public float lifeTime = 1f;
     public float damage ;
     private Rigidbody2D rb;
@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviour
         // Move the bullet forward in its facing direction (up)
         rb.linearVelocity = transform.up * speed;
         audioSource = GetComponent<AudioSource>();
-      
+        Destroy(gameObject,lifeTime);
     }
 
     
