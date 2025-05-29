@@ -15381,7 +15381,7 @@ MonoBehaviour:
   barrel: {fileID: 173054935}
   maxHealth: 200
   health: 200
-  Bullet: {fileID: 7941458109653922241, guid: 22c6efc5b2af0ff47ab59046450c642c, type: 3}
+  Bullet: {fileID: 7941458109653922241, guid: 2d69aafebf535fe44bb4a92dc5a36154, type: 3}
   FirePoint: {fileID: 63142592}
   FireFlams: {fileID: 63142591}
   isFire: 0

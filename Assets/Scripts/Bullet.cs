@@ -11,6 +11,7 @@ public class Bullet : MonoBehaviour
     AudioSource audioSource;
     void Start()
     {
+        if (GetComponent<Rigidbody2D>()==null) return;
         rb = GetComponent<Rigidbody2D>();
 
         // Move the bullet forward in its facing direction (up)
