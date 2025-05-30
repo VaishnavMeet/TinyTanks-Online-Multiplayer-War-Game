@@ -20,9 +20,13 @@ public class TankSwitcher : MonoBehaviour
 
         // Optional: Preserve data from current tank
         float currentHealth = currentTank.GetComponent<TankController2D>().health;
-
-        // Destroy old tank
-        Destroy(currentTank);
+         int Glual = currentTank.GetComponent<TankController2D>().Glual; 
+         int AiRobots = currentTank.GetComponent<TankController2D>().AiRobots; 
+         int obstcles = currentTank.GetComponent<TankController2D>().obstcles; 
+         int TreeHide = currentTank.GetComponent<TankController2D>().TreeHide; 
+         int SpeedBoast = currentTank.GetComponent<TankController2D>().SpeedBoast; 
+    // Destroy old tank
+    Destroy(currentTank);
 
         //  Instantiate a new tank instance
         GameObject newTank = Instantiate(tankPrefab, currentPos, currentRot);
@@ -40,7 +44,13 @@ public class TankSwitcher : MonoBehaviour
 
         // Restore tank health (if needed)
         controller.health = currentHealth;
+        controller.Glual = Glual;
+        controller.AiRobots = AiRobots;
+        controller.obstcles = obstcles;
+        controller.TreeHide = TreeHide;
+        controller.SpeedBoast = SpeedBoast;
         controller.moveSpeed = 3;
+        
         
     }
 }

@@ -10,7 +10,16 @@ public class GameManager : MonoBehaviour
     public List<GameObject> allBulletPrefab; // All bullet/item prefabs to assign randomly
 
     public List<Sprite> allTankBodySprites;
-    
+    public List<Sprite> allTankSmallBarrelSprites;
+    public List<Sprite> allTankMediumBarrelSprites;
+    public List<Sprite> allTankBigSprites;
+
+    GameObject GlualUi;
+    GameObject AiUi ;
+    GameObject TreeUi ;
+    GameObject ObstclesUi ;
+    GameObject SpeedUi ;
+
     private List<GameObject> currentPickups = new List<GameObject>();
 
     void Start()
@@ -19,39 +28,80 @@ public class GameManager : MonoBehaviour
         int spawnIndex = Random.Range(0, spawneGeneration.Count);
         Vector3 spawnPos = spawneGeneration[spawnIndex].position;
 
-        GetComponent<TankSwitcher>().currentTank=Instantiate(Player, spawnPos, Quaternion.identity);
-        Player.transform.position = spawneGeneration[spawnIndex].position;
 
-        // Assign random barrel and tank sprites
+
+        GameObject spawnedPlayer = Instantiate(Player, spawnPos, Quaternion.identity);
+        GetComponent<TankSwitcher>().currentTank = spawnedPlayer;
+
+        // Now use spawnedPlayer instead of Player
+        TankController2D controller = spawnedPlayer.GetComponent<TankController2D>();
+
+        Sprite barrel;
         int rand = Random.Range(0, allTankBodySprites.Count);
-
-       
-        Player.GetComponent<TankController2D>().TankBody.GetComponent<SpriteRenderer>().sprite = allTankBodySprites[rand];
-        Player.GetComponent<TankController2D>().moveJoystick=GetComponent<TankSwitcher>().moveJoystick;
-        Player.GetComponent<TankController2D>().aimJoystick=GetComponent<TankSwitcher>().aimJoystick;
-
-        Player.GetComponent<TankController2D>().swapeImage=GameObject.FindWithTag("pick").GetComponent<Image>();
-
-        StartCoroutine(DelayedSetup());
-
-        // Start bullet spawn cycle 
-        StartCoroutine(SpawnBulletPickupLoop());
-    }
-
-    IEnumerator DelayedSetup()
-    {
-        yield return new WaitForSeconds(0.1f); // Small delay to ensure UI is ready
-        Button button = GameObject.FindWithTag("pick")?.GetComponent<Button>();
-        if (button != null)
+        int rand2=Random.Range(0, 3);
+        if (rand2 == 1)
         {
-            button.onClick.AddListener(() => Debug.Log("Button Clicked!"));
-            Debug.Log("Listener attached!");
+            barrel = allTankSmallBarrelSprites[rand];
+        }
+        if (rand2 == 2)
+        {
+            barrel = allTankMediumBarrelSprites[rand];
         }
         else
         {
-            Debug.LogError("Button not found or missing 'pick' tag!");
+            barrel = allTankBigSprites[rand];
+        }
+
+
+        controller.TankBody.GetComponent<SpriteRenderer>().sprite = allTankBodySprites[rand];
+        controller.BarrelBody.GetComponent<SpriteRenderer>().sprite = barrel;
+        controller.moveJoystick = GetComponent<TankSwitcher>().moveJoystick;
+        controller.aimJoystick = GetComponent<TankSwitcher>().aimJoystick;
+        controller.swapeImage = GameObject.FindWithTag("pick").GetComponent<Image>();
+
+         GlualUi= GameObject.FindWithTag("GlualUi");
+        AiUi = GameObject.FindWithTag("AiUi");
+        TreeUi = GameObject.FindWithTag("TreeUi");
+        ObstclesUi = GameObject.FindWithTag("ObstclesUi");
+        SpeedUi = GameObject.FindWithTag("SpeedUi");
+
+        controller.GlualTxt = GlualUi.GetComponentInChildren<Text>();
+        controller.AiRobotsTxt= AiUi.GetComponentInChildren<Text>();
+        controller.TreeHideTxt = TreeUi.GetComponentInChildren<Text>();
+        controller.obstclesTxt = ObstclesUi.GetComponentInChildren<Text>();
+        controller.SpeedBoastTxt = SpeedUi.GetComponentInChildren<Text>();
+
+        StartCoroutine(DelayedSetup(controller));
+
+        StartCoroutine(SpawnBulletPickupLoop());
+    }
+
+    IEnumerator DelayedSetup(TankController2D controller)
+    {
+        yield return new WaitForSeconds(0.1f); // Small delay to ensure UI is ready
+        Button button = GameObject.FindWithTag("pick")?.GetComponent<Button>();
+        Button button1 = GlualUi.GetComponent<Button>();
+        Button button2 = AiUi.GetComponent<Button>();
+        Button button3 = TreeUi.GetComponent<Button>();
+        Button button4 = ObstclesUi.GetComponent<Button>();
+        Button button5 = SpeedUi.GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(controller.OnSwapButtonClicked);
+            button1.onClick.RemoveAllListeners();
+            button1.onClick.AddListener(controller.UseGlual);
+            button2.onClick.RemoveAllListeners();
+            button2.onClick.AddListener(controller.UseAiRobots);
+            button3.onClick.RemoveAllListeners();
+            button3.onClick.AddListener(controller.UseTreeHide);
+            button4.onClick.RemoveAllListeners();
+            button4.onClick.AddListener(controller.UseObstacles);
+            button5.onClick.RemoveAllListeners();
+            button5.onClick.AddListener(controller.UseSpeedBooster);
         }
     }
+
 
 
     IEnumerator SpawnBulletPickupLoop()

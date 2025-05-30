@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,23 @@ public class TankController2D : MonoBehaviour
     public Image swapeImage;
     public PickUp currentPickup;
 
+    [Header("Powers")]
+    public GameObject GlualPrefab;
+    public GameObject AiRobotsPrefab;
+    public GameObject obstclesPrefab;
+    public GameObject TreeHidePrefab;
+    public GameObject SpeedBoastPrefab;
+    public int Glual = 1;
+    public int AiRobots = 1;
+    public int obstcles = 1;
+    public int TreeHide = 1;
+    public int SpeedBoast = 1;
+    public Text GlualTxt;
+    public Text AiRobotsTxt;
+    public Text obstclesTxt;
+    public Text TreeHideTxt;
+    public Text SpeedBoastTxt;
+
     [Header("Firing Assests")]
     public GameObject Bullet;
     public List<Transform> firePoints;
@@ -47,6 +65,7 @@ public class TankController2D : MonoBehaviour
         swapeImage = GameObject.FindWithTag("pick").GetComponent<Image>();
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
+
     }
 
     void Update()
@@ -200,5 +219,62 @@ public class TankController2D : MonoBehaviour
         }
     }
 
-    
+    public void UseGlual()
+    {
+        if (Glual > 0)
+        {
+            Instantiate(GlualPrefab, firePoints[0].position, Quaternion.identity);
+            Glual--;
+            GlualTxt.text = Glual.ToString();
+        }
+        
+    }
+
+    public void UseAiRobots()
+    {
+        if (AiRobots > 0)
+        {
+            Instantiate(AiRobotsPrefab, firePoints[0].position, Quaternion.identity);
+            AiRobots--;
+            AiRobotsTxt.text = AiRobots.ToString();
+        }
+    }
+
+    public void UseObstacles()
+    {
+        if (obstcles > 0)
+        {
+            Instantiate(obstclesPrefab, firePoints[0].position, Quaternion.identity);
+            obstcles--;
+            obstclesTxt.text = obstclesTxt.ToString();
+        }
+    }
+
+    public void UseTreeHide()
+    {
+        if (TreeHide > 0)
+        {
+            Instantiate(TreeHidePrefab, firePoints[0].position, Quaternion.identity);
+            TreeHide--;
+            TreeHideTxt.text = TreeHide.ToString();
+        }
+    }
+
+    public void UseSpeedBooster()
+    {
+        if (SpeedBoast > 0)
+        {
+            StartCoroutine(SpeedBoost());
+            SpeedBoast--;
+            SpeedBoastTxt.text = SpeedBoast.ToString();
+        }
+    }
+
+    IEnumerator SpeedBoost()
+    {
+        moveSpeed = 5;
+        yield return new WaitForSeconds(10f);
+        moveSpeed = 3;
+    }    
+
 }

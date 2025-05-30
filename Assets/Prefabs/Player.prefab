@@ -656,11 +656,23 @@ MonoBehaviour:
   barrels:
   - {fileID: 7868352978463661435}
   - {fileID: 716173869548365551}
+  TankBody: {fileID: 0}
+  BarrelBody: {fileID: 0}
   maxHealth: 200
   health: 200
   swapeImage: {fileID: 0}
   currentPickup: {fileID: 0}
-  Bullet: {fileID: 7941458109653922241, guid: 9dd178792914afd43ac0258353186d9f, type: 3}
+  GlualPrefab: {fileID: 5356590262864907403, guid: cf11ff9f4223bd34289add205e80c090, type: 3}
+  AiRobotsPrefab: {fileID: 8955074037834642295, guid: 9ea7861b01bdf9942b2d896ff5c5bbbd, type: 3}
+  obstclesPrefab: {fileID: 8209022317664307097, guid: bcd8d7e8c465db443b6d9e5ce0cb3368, type: 3}
+  TreeHidePrefab: {fileID: 6016074467787414832, guid: 28d7fdc1e1f8c214b93e38a73d274ec0, type: 3}
+  SpeedBoastPrefab: {fileID: 0}
+  Glual: 0
+  AiRobots: 0
+  obstcles: 0
+  TreeHide: 0
+  SpeedBoast: 0
+  Bullet: {fileID: 7941458109653922241, guid: 22c6efc5b2af0ff47ab59046450c642c, type: 3}
   firePoints:
   - {fileID: 5011951236026234995}
   - {fileID: 5898676395346765540}
