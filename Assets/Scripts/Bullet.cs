@@ -33,7 +33,10 @@ public class Bullet : MonoBehaviour
         if(collision.gameObject.tag == "Ai")
         {
             collision.gameObject.GetComponent<AIEnemyShooter>().health -= damage;
-            Debug.Log(collision.gameObject.GetComponent<AIEnemyShooter>().health);
+        }
+        if(collision.gameObject.tag == "Glual")
+        {
+            collision.gameObject.GetComponent<Glual>().health -= damage;
         }
         audioSource.enabled = true;
         rb.linearVelocity = Vector2.zero;
