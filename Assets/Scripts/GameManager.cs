@@ -26,6 +26,10 @@ public class GameManager : MonoBehaviour
     private List<GameObject> currentPickups = new List<GameObject>();
     private List<GameObject> currentPowerPickups = new List<GameObject>();
 
+    [Header("Scope")]
+    int ScopeAmount = 5;
+    public Camera cam;
+
     void Start()
     {
         // Spawn Player at random position
@@ -125,7 +129,7 @@ public class GameManager : MonoBehaviour
                 PickUp pickupScript = pickup.GetComponent<PickUp>();
                 pickupScript.prefab = allBulletPrefab[Random.Range(0, allBulletPrefab.Count)];
 
-                currentPowerPickups.Add(pickup);
+                currentPickups.Add(pickup);
             }
 
             // Wait 30 seconds, then destroy pickups
@@ -135,10 +139,23 @@ public class GameManager : MonoBehaviour
                 if (pickup != null)
                     Destroy(pickup);
             }
-            currentPowerPickups.Clear();
+            currentPickups.Clear();
 
             // Wait another 20 seconds before next spawn cycle
             yield return new WaitForSeconds(20f);
+        }
+    }
+    public void OnClickCamera()
+    {
+        if (ScopeAmount < 7)
+        {
+            ScopeAmount++;
+            cam.orthographicSize = ScopeAmount;
+        }
+        else
+        {
+            ScopeAmount = 5;
+            cam.orthographicSize = ScopeAmount;
         }
     }
     IEnumerator SpawnPowerPickupLoop()
@@ -157,17 +174,17 @@ public class GameManager : MonoBehaviour
                 PowerStore PowerScript = pickup.GetComponent<PowerStore>();
                 PowerScript.prefab = allPowerPrefab[Random.Range(0, allPowerPrefab.Count)];
 
-                currentPickups.Add(pickup);
+                currentPowerPickups.Add(pickup);
             }
 
             // Wait 30 seconds, then destroy pickups
             yield return new WaitForSeconds(30f);
-            foreach (GameObject pickup in currentPickups)
+            foreach (GameObject pickup in currentPowerPickups)
             {
                 if (pickup != null)
                     Destroy(pickup);
             }
-            currentPickups.Clear();
+            currentPowerPickups.Clear();
 
             // Wait another 20 seconds before next spawn cycle
             yield return new WaitForSeconds(20f);

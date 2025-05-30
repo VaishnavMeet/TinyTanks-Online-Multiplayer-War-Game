@@ -14,7 +14,7 @@ public class TankController2D : MonoBehaviour
 
     public Transform tankBody;     // Reference to TankBody
     public List<Transform> barrels; // Drag Barrel1, Barrel2, Barrel3 here in Inspector
-    
+
     private Rigidbody2D rb;
 
     [Header("Skin")]
@@ -48,18 +48,21 @@ public class TankController2D : MonoBehaviour
     public GameObject Bullet;
     public List<Transform> firePoints;
     public List<GameObject> FireFlams;
-    public bool isFire=false;
-    public bool isReloading=false;
+    public bool isFire = false;
+    public bool isReloading = false;
     public float timeout = 1f;
-    bool isFiveShot=false;
+    bool isFiveShot = false;
 
     [Header("Sound Effects")]
     public AudioSource audioSource;
     public AudioClip ride;
     public AudioClip fire;
-    bool wasPaused=false;
+    bool wasPaused = false;
 
-
+    [Header("Scope")]
+    int ScopeAmount = 5;
+    public Camera cam;
+    
     void Start()
     {
         swapeImage = GameObject.FindWithTag("pick").GetComponent<Image>();
@@ -288,5 +291,12 @@ public class TankController2D : MonoBehaviour
         obstclesTxt.text = obstcles.ToString();
     }
 
-
+    public void OnClickCamera()
+    {
+        if (ScopeAmount <= 7)
+        {
+            cam.orthographicSize = ScopeAmount;
+            ScopeAmount++;
+        }
+    }
 }
