@@ -7,6 +7,7 @@ TagManager:
   - Oil
   - Ai
   - Glual
+  - GameManager
   layers:
   - Default
   - TransparentFX

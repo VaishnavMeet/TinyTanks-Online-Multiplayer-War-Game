@@ -132,11 +132,6 @@ public class TankController2D : MonoBehaviour
             {
                 yield return StartCoroutine(SingleShoot()); // Wait for each shot to finish
 
-                if(firePoints.Count>=1)
-                yield return new WaitForSeconds(0.05f); // Optional delay between shots
-                else
-                yield return new WaitForSeconds(0.1f); // Optional delay between shots
-
             }
         }
         else
@@ -169,7 +164,7 @@ public class TankController2D : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        yield return new WaitForSeconds(0.1f);
+        //yield return new WaitForSeconds(0.1f);
 
         // Disable all flames
         foreach (var flame in FireFlams)
