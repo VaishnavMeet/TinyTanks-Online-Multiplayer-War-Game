@@ -6,8 +6,11 @@ public class GameManager : MonoBehaviour
 {
     public GameObject Player;
     public List<Transform> spawneGeneration; // Spawn points
+    public List<Transform> powerspawneGeneration; // Spawn points
     public GameObject BulletPickupPrefab;    // Prefab to instantiate at each point
     public List<GameObject> allBulletPrefab; // All bullet/item prefabs to assign randomly
+    public GameObject PowerPickupPrefab;
+    public List<GameObject> allPowerPrefab;
 
     public List<Sprite> allTankBodySprites;
     public List<Sprite> allTankSmallBarrelSprites;
@@ -21,6 +24,7 @@ public class GameManager : MonoBehaviour
     public GameObject SpeedUi ;
 
     private List<GameObject> currentPickups = new List<GameObject>();
+    private List<GameObject> currentPowerPickups = new List<GameObject>();
 
     void Start()
     {
@@ -74,6 +78,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(DelayedSetup(controller));
 
         StartCoroutine(SpawnBulletPickupLoop());
+        StartCoroutine(SpawnPowerPickupLoop());
     }
 
     IEnumerator DelayedSetup(TankController2D controller)
@@ -119,6 +124,38 @@ public class GameManager : MonoBehaviour
                 // Set a random bullet prefab to the pickup
                 PickUp pickupScript = pickup.GetComponent<PickUp>();
                 pickupScript.prefab = allBulletPrefab[Random.Range(0, allBulletPrefab.Count)];
+
+                currentPowerPickups.Add(pickup);
+            }
+
+            // Wait 30 seconds, then destroy pickups
+            yield return new WaitForSeconds(30f);
+            foreach (GameObject pickup in currentPickups)
+            {
+                if (pickup != null)
+                    Destroy(pickup);
+            }
+            currentPowerPickups.Clear();
+
+            // Wait another 20 seconds before next spawn cycle
+            yield return new WaitForSeconds(20f);
+        }
+    }
+    IEnumerator SpawnPowerPickupLoop()
+    {
+        while (true)
+        {
+            // Wait 20 seconds before spawning
+            yield return new WaitForSeconds(25f);
+
+            // Spawn pickups at each spawn point
+            foreach (Transform spawnPoint in powerspawneGeneration)
+            {
+                GameObject pickup = Instantiate(PowerPickupPrefab, spawnPoint.position, Quaternion.identity);
+
+                // Set a random bullet prefab to the pickup
+                PowerStore PowerScript = pickup.GetComponent<PowerStore>();
+                PowerScript.prefab = allPowerPrefab[Random.Range(0, allPowerPrefab.Count)];
 
                 currentPickups.Add(pickup);
             }

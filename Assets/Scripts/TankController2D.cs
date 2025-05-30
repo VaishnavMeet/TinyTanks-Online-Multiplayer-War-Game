@@ -225,7 +225,7 @@ public class TankController2D : MonoBehaviour
         {
             Instantiate(GlualPrefab, firePoints[0].position, Quaternion.identity);
             Glual--;
-            GlualTxt.text = Glual.ToString();
+            UpdateText();
         }
         
     }
@@ -236,7 +236,8 @@ public class TankController2D : MonoBehaviour
         {
             Instantiate(AiRobotsPrefab, firePoints[0].position, Quaternion.identity);
             AiRobots--;
-            AiRobotsTxt.text = AiRobots.ToString();
+            UpdateText();
+
         }
     }
 
@@ -246,7 +247,7 @@ public class TankController2D : MonoBehaviour
         {
             Instantiate(obstclesPrefab, firePoints[0].position, Quaternion.identity);
             obstcles--;
-            obstclesTxt.text = obstcles.ToString();
+            UpdateText();
         }
     }
 
@@ -256,7 +257,7 @@ public class TankController2D : MonoBehaviour
         {
             Instantiate(TreeHidePrefab, firePoints[0].position, Quaternion.identity);
             TreeHide--;
-            TreeHideTxt.text = TreeHide.ToString();
+            UpdateText();
         }
     }
 
@@ -266,7 +267,7 @@ public class TankController2D : MonoBehaviour
         {
             StartCoroutine(SpeedBoost());
             SpeedBoast--;
-            SpeedBoastTxt.text = SpeedBoast.ToString();
+            UpdateText();
         }
     }
 
@@ -275,6 +276,17 @@ public class TankController2D : MonoBehaviour
         moveSpeed = 5;
         yield return new WaitForSeconds(10f);
         moveSpeed = 3;
-    }    
+    }
+
+
+    public void UpdateText()
+    {
+        GlualTxt.text = Glual.ToString();
+        AiRobotsTxt.text = AiRobots.ToString();
+        TreeHideTxt.text = TreeHide.ToString();
+        SpeedBoastTxt.text = SpeedBoast.ToString();
+        obstclesTxt.text = obstcles.ToString();
+    }
+
 
 }
