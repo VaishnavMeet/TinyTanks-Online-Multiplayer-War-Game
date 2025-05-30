@@ -15,7 +15,10 @@ public class TankController2D : MonoBehaviour
     public List<Transform> barrels; // Drag Barrel1, Barrel2, Barrel3 here in Inspector
     
     private Rigidbody2D rb;
-    
+
+    [Header("Skin")]
+    public GameObject TankBody;
+    public GameObject BarrelBody;
 
     [Header("Feactures")]
     public float maxHealth = 200f;
@@ -41,6 +44,7 @@ public class TankController2D : MonoBehaviour
 
     void Start()
     {
+        swapeImage = GameObject.FindWithTag("pick").GetComponent<Image>();
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
     }
