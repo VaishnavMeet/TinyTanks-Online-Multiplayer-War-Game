@@ -15,6 +15,7 @@ public class TankController2D : MonoBehaviour
     public List<Transform> barrels; // Drag Barrel1, Barrel2, Barrel3 here in Inspector
     
     private Rigidbody2D rb;
+    
 
     [Header("Feactures")]
     public float maxHealth = 200f;
