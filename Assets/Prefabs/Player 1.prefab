@@ -363,11 +363,16 @@ MonoBehaviour:
   obstclesPrefab: {fileID: 8209022317664307097, guid: bcd8d7e8c465db443b6d9e5ce0cb3368, type: 3}
   TreeHidePrefab: {fileID: 6016074467787414832, guid: 28d7fdc1e1f8c214b93e38a73d274ec0, type: 3}
   SpeedBoastPrefab: {fileID: 0}
-  Glual: 0
-  AiRobots: 0
-  obstcles: 0
-  TreeHide: 0
-  SpeedBoast: 0
+  Glual: 1
+  AiRobots: 1
+  obstcles: 1
+  TreeHide: 1
+  SpeedBoast: 1
+  GlualTxt: {fileID: 0}
+  AiRobotsTxt: {fileID: 0}
+  obstclesTxt: {fileID: 0}
+  TreeHideTxt: {fileID: 0}
+  SpeedBoastTxt: {fileID: 0}
   Bullet: {fileID: 7941458109653922241, guid: 22c6efc5b2af0ff47ab59046450c642c, type: 3}
   firePoints:
   - {fileID: 3507670080456307483}

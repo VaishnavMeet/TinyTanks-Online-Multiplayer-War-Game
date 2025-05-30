@@ -246,7 +246,7 @@ public class TankController2D : MonoBehaviour
         {
             Instantiate(obstclesPrefab, firePoints[0].position, Quaternion.identity);
             obstcles--;
-            obstclesTxt.text = obstclesTxt.ToString();
+            obstclesTxt.text = obstcles.ToString();
         }
     }
 

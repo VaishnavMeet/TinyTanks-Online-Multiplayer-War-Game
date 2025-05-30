@@ -14,11 +14,11 @@ public class GameManager : MonoBehaviour
     public List<Sprite> allTankMediumBarrelSprites;
     public List<Sprite> allTankBigSprites;
 
-    GameObject GlualUi;
-    GameObject AiUi ;
-    GameObject TreeUi ;
-    GameObject ObstclesUi ;
-    GameObject SpeedUi ;
+    public GameObject GlualUi;
+    public GameObject AiUi ;
+    public GameObject TreeUi ;
+    public GameObject ObstclesUi ;
+    public GameObject SpeedUi ;
 
     private List<GameObject> currentPickups = new List<GameObject>();
 
