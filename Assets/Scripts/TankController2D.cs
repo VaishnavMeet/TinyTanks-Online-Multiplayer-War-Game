@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +12,7 @@ public class TankController2D : MonoBehaviour
     public Joystick aimJoystick;  // Left joystick
 
     public Transform tankBody;     // Reference to TankBody
-    public Transform barrelPoint;  // Pivot for barrel
-    public Transform barrel;       // Actual barrel sprite
+    public List<Transform> barrels; // Drag Barrel1, Barrel2, Barrel3 here in Inspector
     
     private Rigidbody2D rb;
 
@@ -24,8 +24,8 @@ public class TankController2D : MonoBehaviour
 
     [Header("Firing Assests")]
     public GameObject Bullet;
-    public Transform FirePoint;
-    public GameObject FireFlams;
+    public List<Transform> firePoints;
+    public List<GameObject> FireFlams;
     public bool isFire=false;
     public bool isReloading=false;
     public float timeout = 1f;
@@ -83,8 +83,10 @@ public class TankController2D : MonoBehaviour
         if (magnitude > 0.01f)
         {
             float angle = Mathf.Atan2(aimInput.y, aimInput.x) * Mathf.Rad2Deg + 90f;
-            barrelPoint.rotation = Quaternion.Euler(0, 0, angle);
-
+            foreach (Transform barrel in barrels)
+            {
+                barrel.rotation = Quaternion.Euler(0, 0, angle);
+            }
             // Fire if joystick is pushed to its limit (or very close)
             if (magnitude >= 0.95f) // adjust threshold if needed
             {
@@ -129,7 +131,12 @@ public class TankController2D : MonoBehaviour
             for (int i = 0; i < 5; i++)
             {
                 yield return StartCoroutine(SingleShoot()); // Wait for each shot to finish
+
+                if(firePoints.Count>=1)
+                yield return new WaitForSeconds(0.05f); // Optional delay between shots
+                else
                 yield return new WaitForSeconds(0.1f); // Optional delay between shots
+
             }
         }
         else
@@ -146,13 +153,30 @@ public class TankController2D : MonoBehaviour
     {
         isFire = false;
         isReloading = true;
-        FireFlams.SetActive(true);
-        GameObject bullet = Instantiate(
-     Bullet,
-     FirePoint.position,
-     Quaternion.Euler(0, 0, barrelPoint.eulerAngles.z + 180f));
+        foreach (var flame in FireFlams)
+        {
+            flame.SetActive(true);
+        }
+
+        for (int i = 0; i < firePoints.Count; i++)
+        {
+            Transform firePoint = firePoints[i];
+            GameObject bullet = Instantiate(
+                Bullet,
+                firePoint.position,
+                Quaternion.Euler(0, 0, firePoint.eulerAngles.z + 180f)
+            );
+            yield return new WaitForSeconds(0.1f);
+        }
+
         yield return new WaitForSeconds(0.1f);
-        FireFlams.SetActive(false);
+
+        // Disable all flames
+        foreach (var flame in FireFlams)
+        {
+            yield return new WaitForSeconds(0.1f);
+            flame.SetActive(false);
+        }
     }
 
 
