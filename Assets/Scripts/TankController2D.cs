@@ -110,7 +110,7 @@ public class TankController2D : MonoBehaviour
             float angle = Mathf.Atan2(aimInput.y, aimInput.x) * Mathf.Rad2Deg + 90f;
             foreach (Transform barrel in barrels)
             {
-                barrel.rotation = Quaternion.Euler(0, 0, angle);
+                barrel.rotation = Quaternion.Euler(0, barrel.eulerAngles.y , angle);
             }
             // Fire if joystick is pushed to its limit (or very close)
             if (magnitude >= 0.95f) // adjust threshold if needed
