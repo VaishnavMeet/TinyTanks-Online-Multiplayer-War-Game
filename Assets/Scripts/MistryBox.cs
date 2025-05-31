@@ -20,7 +20,7 @@ public class MistryBox : MonoBehaviour
         if (switcher != null)
         {
             // Call SwitchTank with a random player prefab
-            switcher.SwitchTank(players[0]);
+            switcher.SwitchTank(players[playerNo]);
 
             // Optional: destroy or deactivate the box after use
             Destroy(gameObject);
