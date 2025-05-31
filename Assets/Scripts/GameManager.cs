@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     public GameObject TreeUi ;
     public GameObject ObstclesUi ;
     public GameObject SpeedUi ;
-
+    GameObject spawnedPlayer;
     private List<GameObject> currentPickups = new List<GameObject>();
     private List<GameObject> currentPowerPickups = new List<GameObject>();
 
@@ -32,59 +32,65 @@ public class GameManager : MonoBehaviour
     public Camera cam;
     int maxLimit = 5;
 
+
     void Start()
     {
         // Spawn Player at random position
+
+        SpawnPlayer();
+        StartCoroutine(SpawnBulletPickupLoop());
+        StartCoroutine(SpawnPowerPickupLoop());
+    }
+
+    void SpawnPlayer()
+    {
         int spawnIndex = Random.Range(0, spawneGeneration.Count);
         Vector3 spawnPos = spawneGeneration[spawnIndex].position;
 
+        spawnedPlayer = Instantiate(Player, spawnPos, Quaternion.identity);
+        SetupPlayer(spawnedPlayer);
+    }
 
+    void SetupPlayer(GameObject player)
+    {
+        GetComponent<TankSwitcher>().currentTank = player;
+        cam.GetComponent<CemraSetup>().player = player.transform;
 
-        GameObject spawnedPlayer = Instantiate(Player, spawnPos, Quaternion.identity);
-        GetComponent<TankSwitcher>().currentTank = spawnedPlayer;
-        cam.GetComponent<CemraSetup>().player = spawnedPlayer.transform;
-        // Now use spawnedPlayer instead of Player
-        TankController2D controller = spawnedPlayer.GetComponent<TankController2D>();
+        TankController2D controller = player.GetComponent<TankController2D>();
 
-        Sprite barrel ;
+        // Assign tank visuals
         int rand = Random.Range(0, allTankBodySprites.Count);
-        int rand2=Random.Range(0, 3);
-        if (rand2 == 0)
+        int rand2 = Random.Range(0, 3);
+
+        Sprite barrel = rand2 switch
         {
-            barrel = allTankSmallBarrelSprites[rand];
-        }
-        if (rand2 == 1)
-        {
-            barrel = allTankMediumBarrelSprites[rand];
-        }
-        else
-        {
-            barrel = allTankBigSprites[rand];
-        }
+            0 => allTankSmallBarrelSprites[rand],
+            1 => allTankMediumBarrelSprites[rand],
+            _ => allTankBigSprites[rand]
+        };
+
         maxLimit += rand2;
 
         controller.TankBody.GetComponent<SpriteRenderer>().sprite = allTankBodySprites[rand];
         controller.BarrelBody.GetComponent<SpriteRenderer>().sprite = barrel;
+
         controller.moveJoystick = GetComponent<TankSwitcher>().moveJoystick;
         controller.aimJoystick = GetComponent<TankSwitcher>().aimJoystick;
         controller.swapeImage = GameObject.FindWithTag("pick").GetComponent<Image>();
 
-         GlualUi= GameObject.FindWithTag("GlualUi");
+        GlualUi = GameObject.FindWithTag("GlualUi");
         AiUi = GameObject.FindWithTag("AiUi");
         TreeUi = GameObject.FindWithTag("TreeUi");
         ObstclesUi = GameObject.FindWithTag("ObstclesUi");
         SpeedUi = GameObject.FindWithTag("SpeedUi");
-        
+
         controller.GlualTxt = GlualUi.GetComponentInChildren<Text>();
-        controller.AiRobotsTxt= AiUi.GetComponentInChildren<Text>();
+        controller.AiRobotsTxt = AiUi.GetComponentInChildren<Text>();
         controller.TreeHideTxt = TreeUi.GetComponentInChildren<Text>();
         controller.obstclesTxt = ObstclesUi.GetComponentInChildren<Text>();
         controller.SpeedBoastTxt = SpeedUi.GetComponentInChildren<Text>();
 
         StartCoroutine(DelayedSetup(controller));
-
-        StartCoroutine(SpawnBulletPickupLoop());
-        StartCoroutine(SpawnPowerPickupLoop());
     }
 
     IEnumerator DelayedSetup(TankController2D controller)
@@ -192,4 +198,23 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(20f);
         }
     }
+
+    public void OnPlayerDeath()
+    {
+        StartCoroutine(RespawnAfterDelay(3f));
+    }
+
+    IEnumerator RespawnAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        int spawnIndex = Random.Range(0, spawneGeneration.Count);
+        Vector3 spawnPos = spawneGeneration[spawnIndex].position;
+
+        spawnedPlayer = Instantiate(Player, spawnPos, Quaternion.identity);
+        SetupPlayer(spawnedPlayer);
+    }
+
+
 }
+

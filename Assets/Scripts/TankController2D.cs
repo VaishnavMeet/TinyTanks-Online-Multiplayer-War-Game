@@ -73,6 +73,22 @@ public class TankController2D : MonoBehaviour
     {
         HandleMovement();
         HandleBarrelRotation();
+
+        if (health <= 0)
+        {
+            health = 0;
+            StartCoroutine(HandleDeath());
+        }
+    }
+
+    IEnumerator HandleDeath()
+    {
+        // Prevent multiple triggers
+        if (!gameObject.activeSelf) yield break;
+
+        gameObject.SetActive(false); // Hide the player
+        FindObjectOfType<GameManager>().OnPlayerDeath(); // Notify GameManager
+        yield return null;
     }
 
     void HandleMovement()
