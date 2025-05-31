@@ -10,15 +10,7 @@ public class CemraSetup : MonoBehaviour
 
     void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogWarning("No GameObject found with tag 'Player'.");
-        }
+        
     }
 
     void LateUpdate()

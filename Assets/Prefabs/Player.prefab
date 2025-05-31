@@ -428,8 +428,8 @@ GameObject:
   - component: {fileID: 1011159623729361627}
   - component: {fileID: 3828595708254746251}
   - component: {fileID: 5133489455443619488}
-  - component: {fileID: 2542792031901768365}
   - component: {fileID: 6822112705120222471}
+  - component: {fileID: 2542792031901768365}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -501,7 +501,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 0
-  MinDistance: 8.719799
+  MinDistance: 0
   MaxDistance: 8.7198
   Pan2D: 0
   rolloffMode: 1
@@ -623,19 +623,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.8122157, y: 0.77942646}
   m_EdgeRadius: 0
---- !u!114 &2542792031901768365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5976751080656276781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed737860db3ea0f45b40b735ca926481, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBarPrefab: {fileID: 6881495580397413890, guid: ba068fc2a455e764499156d20f7b306d, type: 3}
 --- !u!114 &6822112705120222471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -672,6 +659,11 @@ MonoBehaviour:
   obstcles: 0
   TreeHide: 0
   SpeedBoast: 0
+  GlualTxt: {fileID: 0}
+  AiRobotsTxt: {fileID: 0}
+  obstclesTxt: {fileID: 0}
+  TreeHideTxt: {fileID: 0}
+  SpeedBoastTxt: {fileID: 0}
   Bullet: {fileID: 7941458109653922241, guid: 22c6efc5b2af0ff47ab59046450c642c, type: 3}
   firePoints:
   - {fileID: 5011951236026234995}
@@ -685,6 +677,21 @@ MonoBehaviour:
   audioSource: {fileID: 3828595708254746251}
   ride: {fileID: 8300000, guid: 1beb1c8ff9fb4ad4998030d2cba3c0e8, type: 3}
   fire: {fileID: 8300000, guid: 33ad792fca55ab54b8b47c1b3f50eb15, type: 3}
+--- !u!114 &2542792031901768365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5976751080656276781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed737860db3ea0f45b40b735ca926481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 6881495580397413890, guid: ba068fc2a455e764499156d20f7b306d, type: 3}
+  healthValue: 200
+  maxValue: 200
 --- !u!1 &6594759599218427013
 GameObject:
   m_ObjectHideFlags: 0

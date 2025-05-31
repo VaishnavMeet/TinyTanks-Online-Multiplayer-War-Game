@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 public class GameManager : MonoBehaviour
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
     [Header("Scope")]
     int ScopeAmount = 5;
     public Camera cam;
+    int maxLimit = 5;
 
     void Start()
     {
@@ -40,18 +42,18 @@ public class GameManager : MonoBehaviour
 
         GameObject spawnedPlayer = Instantiate(Player, spawnPos, Quaternion.identity);
         GetComponent<TankSwitcher>().currentTank = spawnedPlayer;
-
+        cam.GetComponent<CemraSetup>().player = spawnedPlayer.transform;
         // Now use spawnedPlayer instead of Player
         TankController2D controller = spawnedPlayer.GetComponent<TankController2D>();
 
-        Sprite barrel;
+        Sprite barrel ;
         int rand = Random.Range(0, allTankBodySprites.Count);
         int rand2=Random.Range(0, 3);
-        if (rand2 == 1)
+        if (rand2 == 0)
         {
             barrel = allTankSmallBarrelSprites[rand];
         }
-        if (rand2 == 2)
+        if (rand2 == 1)
         {
             barrel = allTankMediumBarrelSprites[rand];
         }
@@ -59,7 +61,7 @@ public class GameManager : MonoBehaviour
         {
             barrel = allTankBigSprites[rand];
         }
-
+        maxLimit += rand2;
 
         controller.TankBody.GetComponent<SpriteRenderer>().sprite = allTankBodySprites[rand];
         controller.BarrelBody.GetComponent<SpriteRenderer>().sprite = barrel;
@@ -72,7 +74,7 @@ public class GameManager : MonoBehaviour
         TreeUi = GameObject.FindWithTag("TreeUi");
         ObstclesUi = GameObject.FindWithTag("ObstclesUi");
         SpeedUi = GameObject.FindWithTag("SpeedUi");
-
+        
         controller.GlualTxt = GlualUi.GetComponentInChildren<Text>();
         controller.AiRobotsTxt= AiUi.GetComponentInChildren<Text>();
         controller.TreeHideTxt = TreeUi.GetComponentInChildren<Text>();
@@ -147,7 +149,7 @@ public class GameManager : MonoBehaviour
     }
     public void OnClickCamera()
     {
-        if (ScopeAmount < 7)
+        if (ScopeAmount < maxLimit )
         {
             ScopeAmount++;
             cam.orthographicSize = ScopeAmount;

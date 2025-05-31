@@ -59,9 +59,7 @@ public class TankController2D : MonoBehaviour
     public AudioClip fire;
     bool wasPaused = false;
 
-    [Header("Scope")]
-    int ScopeAmount = 5;
-    public Camera cam;
+    
     
     void Start()
     {
@@ -122,18 +120,11 @@ public class TankController2D : MonoBehaviour
                     isFire= true;
                     if (audioSource.isPlaying)
                     {
-                        audioSource.Pause() ;
-                        wasPaused= true ;
+                       
                     }
                     if (!audioSource.isPlaying)
                     {
-                        audioSource.PlayOneShot(fire);
-                        if (wasPaused)
-                        {
-                            audioSource.UnPause();
-                            wasPaused= false ;
-                        }
-                        
+                        audioSource.PlayOneShot(fire);                        
                     }
                     timeout = Bullet.GetComponent<Bullet>().reloadingTimeout;
                     if(Bullet.GetComponent<FiveShotGeneration>()!=null)
@@ -291,12 +282,5 @@ public class TankController2D : MonoBehaviour
         obstclesTxt.text = obstcles.ToString();
     }
 
-    public void OnClickCamera()
-    {
-        if (ScopeAmount <= 7)
-        {
-            cam.orthographicSize = ScopeAmount;
-            ScopeAmount++;
-        }
-    }
+    
 }

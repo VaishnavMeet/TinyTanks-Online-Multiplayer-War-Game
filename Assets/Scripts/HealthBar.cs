@@ -12,8 +12,8 @@ public class HealthBar : MonoBehaviour
     private System.Reflection.FieldInfo maxHealthField;
 
     private MonoBehaviour targetScript;
-    private float healthValue;
-    private float maxValue;
+    public float healthValue;
+    public float maxValue;
 
     private void Start()
     {
@@ -39,7 +39,7 @@ public class HealthBar : MonoBehaviour
     private void Update()
     {
         if (targetScript == null || healthField == null || maxHealthField == null || healthBarImage == null) return;
-
+       
         healthValue = (float)healthField.GetValue(targetScript);
         float fill = Mathf.Clamp01(healthValue / maxValue);
         healthBarImage.fillAmount = fill;
