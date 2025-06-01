@@ -1,21 +1,21 @@
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using Photon.Pun;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerStore : MonoBehaviour
+public class PowerStore : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
     public GameObject prefab;
+    public List<GameObject> allPowerPrefab; // Assign this via inspector or singleton
 
-    private void Start()
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        if (prefab.GetComponentInChildren<SpriteRenderer>() != null)
-        {
-            GetComponent<SpriteRenderer>().sprite = prefab.GetComponentInChildren<SpriteRenderer>().sprite;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().sprite = prefab.GetComponent<SpriteRenderer>().sprite;
-        }
+        int index = (int)photonView.InstantiationData[0];
+        prefab = allPowerPrefab[index];
+
+        SpriteRenderer prefabSprite = prefab.GetComponentInChildren<SpriteRenderer>();
+        GetComponent<SpriteRenderer>().sprite = prefabSprite != null ? prefabSprite.sprite : prefab.GetComponent<SpriteRenderer>().sprite;
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -28,7 +28,7 @@ public class PowerStore : MonoBehaviour
             if (prefab.tag == "ObstclesUi") player.obstcles++;
             if (prefab.tag == "SpeedUi") player.SpeedBoast++;
             player.UpdateText();
-            Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
         }
     }
 }

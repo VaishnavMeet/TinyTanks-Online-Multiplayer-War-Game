@@ -1,27 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class TankController2D : MonoBehaviour
 {
     public float moveSpeed = 3f;
     public float rotateSpeed = 360f;
-
-    public Joystick moveJoystick; // Right joystick
-    public Joystick aimJoystick;  // Left joystick
-
-    public Transform tankBody;     // Reference to TankBody
-    public List<Transform> barrels; // Drag Barrel1, Barrel2, Barrel3 here in Inspector
+    public Joystick moveJoystick;
+    public Joystick aimJoystick;
+    public Transform tankBody;
+    public List<Transform> barrels;
 
     private Rigidbody2D rb;
+    private PhotonView view;
 
     [Header("Skin")]
     public GameObject TankBody;
     public GameObject BarrelBody;
 
-    [Header("Feactures")]
+    [Header("Features")]
     public float maxHealth = 200f;
     public float health = 200f;
     public Image swapeImage;
@@ -33,90 +32,88 @@ public class TankController2D : MonoBehaviour
     public GameObject obstclesPrefab;
     public GameObject TreeHidePrefab;
     public GameObject SpeedBoastPrefab;
-    public int Glual = 1;
-    public int AiRobots = 1;
-    public int obstcles = 1;
-    public int TreeHide = 1;
-    public int SpeedBoast = 1;
-    public Text GlualTxt;
-    public Text AiRobotsTxt;
-    public Text obstclesTxt;
-    public Text TreeHideTxt;
-    public Text SpeedBoastTxt;
+    public int Glual = 1, AiRobots = 1, obstcles = 1, TreeHide = 1, SpeedBoast = 1;
+    public Text GlualTxt, AiRobotsTxt, obstclesTxt, TreeHideTxt, SpeedBoastTxt;
 
-    [Header("Firing Assests")]
+    [Header("Firing Assets")]
     public GameObject Bullet;
     public List<Transform> firePoints;
     public List<GameObject> FireFlams;
-    public bool isFire = false;
-    public bool isReloading = false;
+    private bool isFire = false, isReloading = false, isFiveShot = false;
     public float timeout = 1f;
-    bool isFiveShot = false;
+    private string currentBulletName;
+
 
     [Header("Sound Effects")]
     public AudioSource audioSource;
-    public AudioClip ride;
-    public AudioClip fire;
-    bool wasPaused = false;
+    public AudioClip ride, fire;
 
-    
-    
-    void Start()
+    private void Start()
     {
-        swapeImage = GameObject.FindWithTag("pick").GetComponent<Image>();
+        currentBulletName = Bullet.name;
+        view = GetComponent<PhotonView>();
+        swapeImage = GameObject.FindWithTag("pick")?.GetComponent<Image>();
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
-
     }
 
-    void Update()
+    private void Update()
     {
+        if (!view.IsMine) return;
+
         HandleMovement();
         HandleBarrelRotation();
 
         if (health <= 0)
         {
-            health = 0;
             StartCoroutine(HandleDeath());
         }
     }
 
-    IEnumerator HandleDeath()
+    private IEnumerator HandleDeath()
     {
-        // Prevent multiple triggers
-        if (!gameObject.activeSelf) yield break;
+        if (view.IsMine)
+        {
+            FindObjectOfType<GameManager>().StartCoroutine("RespawnPlayer");
+        }
 
-        gameObject.SetActive(false); // Hide the player
-        FindObjectOfType<GameManager>().OnPlayerDeath(); // Notify GameManager
+        PhotonNetwork.Destroy(gameObject); // Remove tank across all clients
         yield return null;
     }
 
-    void HandleMovement()
+
+    private void HandleMovement()
     {
         Vector2 moveInput = new Vector2(moveJoystick.Horizontal, moveJoystick.Vertical);
 
         if (moveInput.sqrMagnitude > 0.01f)
         {
-            Vector2 moveDirection = moveInput.normalized;
-            rb.linearVelocity = moveDirection * moveSpeed;
-            if (!audioSource.isPlaying)
-            {
-                 audioSource.Play();
-            }
-            // Rotate tank body to face movement direction
-            float angle = Mathf.Atan2(moveInput.y, moveInput.x) * Mathf.Rad2Deg ;
-            angle += 90;
+            Vector2 direction = moveInput.normalized;
+            rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, direction * moveSpeed, Time.deltaTime * 10f);
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f;
             Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
-            tankBody.rotation = Quaternion.RotateTowards(tankBody.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+            tankBody.rotation = Quaternion.Slerp(tankBody.rotation, targetRotation, Time.deltaTime * 8f);
+
+            view.RPC("SyncTankBodyRotation", RpcTarget.Others, angle);
+
+            if (!audioSource.isPlaying) audioSource.PlayOneShot(ride);
         }
         else
         {
-            audioSource.Pause();
             rb.linearVelocity = Vector2.zero;
+            if (audioSource.isPlaying) audioSource.Pause();
         }
     }
 
-    void HandleBarrelRotation()
+    [PunRPC]
+    void SyncTankBodyRotation(float angle)
+    {
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        tankBody.rotation = Quaternion.Slerp(tankBody.rotation, targetRotation, Time.deltaTime * 8f);
+    }
+
+    private void HandleBarrelRotation()
     {
         Vector2 aimInput = new Vector2(aimJoystick.Horizontal, aimJoystick.Vertical);
         float magnitude = aimInput.magnitude;
@@ -124,159 +121,124 @@ public class TankController2D : MonoBehaviour
         if (magnitude > 0.01f)
         {
             float angle = Mathf.Atan2(aimInput.y, aimInput.x) * Mathf.Rad2Deg + 90f;
+            Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+
             foreach (Transform barrel in barrels)
             {
-                barrel.rotation = Quaternion.Euler(0, barrel.eulerAngles.y , angle);
+                barrel.rotation = Quaternion.Slerp(barrel.rotation, targetRotation, Time.deltaTime * 15f);
             }
-            // Fire if joystick is pushed to its limit (or very close)
-            if (magnitude >= 0.95f) // adjust threshold if needed
+
+            view.RPC("SyncBarrelRotation", RpcTarget.Others, angle);
+
+            if (magnitude >= 0.95f && !isFire && !isReloading)
             {
-                if (!isFire && !isReloading)
-                {
-                    isFire= true;
-                    if (audioSource.isPlaying)
-                    {
-                       
-                    }
-                    if (!audioSource.isPlaying)
-                    {
-                        audioSource.PlayOneShot(fire);                        
-                    }
-                    timeout = Bullet.GetComponent<Bullet>().reloadingTimeout;
-                    if(Bullet.GetComponent<FiveShotGeneration>()!=null)
-                    {
-                        isFiveShot= true ;
-                    }
-                    else
-                    {
-                        isFiveShot = false ;
-                    }
-                    StartCoroutine(ShootAndRealoding(timeout));
-                }
-                
+                isFire = true;
+                timeout = Bullet.GetComponent<Bullet>().reloadingTimeout;
+                isFiveShot = Bullet.GetComponent<FiveShotGeneration>() != null;
+
+                StartCoroutine(ShootAndReload(timeout));
             }
         }
     }
 
-    IEnumerator ShootAndRealoding(float timeout)
+    [PunRPC]
+    void SyncBarrelRotation(float angle)
+    {
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        foreach (Transform barrel in barrels)
+        {
+            barrel.rotation = Quaternion.Slerp(barrel.rotation, targetRotation, Time.deltaTime * 15f);
+        }
+    }
+
+    private IEnumerator ShootAndReload(float timeout)
     {
         if (isFiveShot)
         {
             for (int i = 0; i < 5; i++)
             {
-                yield return StartCoroutine(SingleShoot()); // Wait for each shot to finish
-
+                yield return StartCoroutine(SingleShoot());
             }
         }
         else
         {
-            StartCoroutine(SingleShoot());
+            yield return StartCoroutine(SingleShoot());
         }
-
 
         yield return new WaitForSeconds(timeout);
-        isReloading= false;
+        isReloading = false;
     }
 
-    IEnumerator SingleShoot()
+    private IEnumerator SingleShoot()
     {
-        isFire = false;
         isReloading = true;
-        foreach (var flame in FireFlams)
-        {
-            flame.SetActive(true);
-        }
+        foreach (var flame in FireFlams) flame.SetActive(true);
 
-        for (int i = 0; i < firePoints.Count; i++)
+        foreach (Transform firePoint in firePoints)
         {
-            Transform firePoint = firePoints[i];
-            GameObject bullet = Instantiate(
-                Bullet,
-                firePoint.position,
-                Quaternion.Euler(0, 0, firePoint.eulerAngles.z + 180f)
-            );
+            PhotonNetwork.Instantiate(currentBulletName, firePoint.position, Quaternion.Euler(0, 0, firePoint.eulerAngles.z + 180f));
+            if (fire != null) audioSource.PlayOneShot(fire);
             yield return new WaitForSeconds(0.1f);
         }
 
-        //yield return new WaitForSeconds(0.1f);
-
-        // Disable all flames
-        foreach (var flame in FireFlams)
-        {
-            yield return new WaitForSeconds(0.1f);
-            flame.SetActive(false);
-        }
+        yield return new WaitForSeconds(0.1f);
+        foreach (var flame in FireFlams) flame.SetActive(false);
+        isFire = false;
     }
-
 
     public void OnSwapButtonClicked()
     {
-        if (currentPickup != null)
-        {
-            GameObject temp= Bullet;
-            Bullet = currentPickup.prefab;
-            currentPickup.prefab = temp;
-            if (currentPickup.prefab.GetComponentInChildren<SpriteRenderer>() != null)
-            {
-                swapeImage.sprite = currentPickup.prefab.GetComponentInChildren<SpriteRenderer>().sprite;
-            }
-            else
-            {
-                swapeImage.sprite = currentPickup.prefab.GetComponent<SpriteRenderer>().sprite;
-            }
-                currentPickup.GetComponent<SpriteRenderer>().sprite = swapeImage.sprite;
-            
-        }
+        view.RPC("RPC_SwitchBullet", RpcTarget.AllBuffered);
     }
 
-    public void UseGlual()
+
+    [PunRPC]
+    void RPC_SwitchBullet()
     {
-        if (Glual > 0)
-        {
-            Instantiate(GlualPrefab, firePoints[0].position, Quaternion.identity);
-            Glual--;
-            UpdateText();
-        }
-        
-    }
+        if (currentPickup == null) return;
 
-    public void UseAiRobots()
-    {
-        if (AiRobots > 0)
-        {
-            Instantiate(AiRobotsPrefab, firePoints[0].position, Quaternion.identity);
-            AiRobots--;
-            UpdateText();
+        GameObject newBullet = currentPickup.prefab;
+        string newBulletName = newBullet.name;
 
-        }
-    }
+        // Swap locally
+        GameObject temp = Bullet;
+        Bullet = newBullet;
+        currentPickup.prefab = temp;
+        currentBulletName = newBulletName;
+        Debug.Log(currentPickup.prefab.name);
+        // Update UI
+        Sprite newSprite = currentPickup.prefab.GetComponentInChildren<SpriteRenderer>()?.sprite ??
+                           currentPickup.prefab.GetComponent<SpriteRenderer>()?.sprite;
 
-    public void UseObstacles()
-    {
-        if (obstcles > 0)
+        if (newSprite != null)
         {
-            Instantiate(obstclesPrefab, firePoints[0].position, Quaternion.identity);
-            obstcles--;
-            UpdateText();
+            swapeImage.sprite = newSprite;
+            currentPickup.GetComponent<SpriteRenderer>().sprite = newSprite;
         }
     }
 
-    public void UseTreeHide()
-    {
-        if (TreeHide > 0)
-        {
-            Instantiate(TreeHidePrefab, firePoints[0].position, Quaternion.identity);
-            TreeHide--;
-            UpdateText();
-        }
-    }
 
+
+    public void UseGlual() { UseUtility(ref Glual, GlualPrefab); }
+    public void UseAiRobots() { UseUtility(ref AiRobots, AiRobotsPrefab); }
+    public void UseObstacles() { UseUtility(ref obstcles, obstclesPrefab); }
+    public void UseTreeHide() { UseUtility(ref TreeHide, TreeHidePrefab); }
     public void UseSpeedBooster()
     {
         if (SpeedBoast > 0)
         {
             StartCoroutine(SpeedBoost());
             SpeedBoast--;
+            UpdateText();
+        }
+    }
+
+    void UseUtility(ref int count, GameObject prefab)
+    {
+        if (count > 0)
+        {
+            PhotonNetwork.Instantiate(prefab.name, firePoints[0].position, Quaternion.identity);
+            count--;
             UpdateText();
         }
     }
@@ -288,6 +250,18 @@ public class TankController2D : MonoBehaviour
         moveSpeed = 3;
     }
 
+    [PunRPC]
+    public void SetTankSkin(int bodyIndex, int barrelType, int barrelIndex)
+    {
+        var gm = FindObjectOfType<GameManager>();
+        TankBody.GetComponent<SpriteRenderer>().sprite = gm.allTankBodySprites[bodyIndex];
+        BarrelBody.GetComponent<SpriteRenderer>().sprite = barrelType switch
+        {
+            0 => gm.allTankSmallBarrelSprites[barrelIndex],
+            1 => gm.allTankMediumBarrelSprites[barrelIndex],
+            _ => gm.allTankBigSprites[barrelIndex],
+        };
+    }
 
     public void UpdateText()
     {
@@ -297,6 +271,4 @@ public class TankController2D : MonoBehaviour
         SpeedBoastTxt.text = SpeedBoast.ToString();
         obstclesTxt.text = obstcles.ToString();
     }
-
-    
 }

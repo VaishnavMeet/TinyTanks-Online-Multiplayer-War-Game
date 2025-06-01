@@ -1,26 +1,37 @@
 using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 
-public class OilTank : MonoBehaviour
+public class OilTank : MonoBehaviourPun
 {
-    bool isOiled = false;
+    private bool isOiled = false;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && !isOiled)
+        PhotonView view = collision.GetComponent<PhotonView>();
+
+        // Ensure only the owning player triggers the effect
+        if (collision.CompareTag("Player") && view != null && view.IsMine && !isOiled)
         {
             TankController2D player = collision.GetComponent<TankController2D>();
-            player.moveSpeed = 5;
-            isOiled = true;
-            StartCoroutine(RestartSpeed(player));
+            if (player != null)
+            {
+                isOiled = true;
+                player.moveSpeed = 5;
+                StartCoroutine(RestartSpeed(player));
+            }
         }
     }
 
-    public IEnumerator RestartSpeed(TankController2D player)
+    private IEnumerator RestartSpeed(TankController2D player)
     {
-        Debug.Log(player.moveSpeed);
+        Debug.Log("Speed boosted: " + player.moveSpeed);
         yield return new WaitForSeconds(15);
         player.moveSpeed = 3;
-        Debug.Log(player.moveSpeed);
-        Destroy(gameObject);
+        Debug.Log("Speed reset: " + player.moveSpeed);
+
+        // Destroy the oil tank pickup across the network
+        if (photonView.IsMine)
+            PhotonNetwork.Destroy(gameObject);
     }
 }

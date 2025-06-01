@@ -1,58 +1,84 @@
 using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviourPun
 {
     public float speed = 1f;
     public float lifeTime = 1f;
     public float reloadingTimeout = 1f;
-    public float damage ;
+    public float damage;
     private Rigidbody2D rb;
     public Animator animator;
     AudioSource audioSource;
     void Start()
     {
-        if (GetComponent<Rigidbody2D>()==null) return;
         rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            Debug.LogWarning("Bullet has no Rigidbody2D!");
+            return;
+        }
 
-        // Move the bullet forward in its facing direction (up)
-        rb.linearVelocity = transform.up * speed;
+        animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
-        Destroy(gameObject,lifeTime);
+
+        rb.linearVelocity = transform.up * speed;
+        Destroy(gameObject, lifeTime);
     }
 
-    
-
-    // Use this if your bullet has a non-trigger collider
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        // Damage Player
+        TankController2D player = collision.gameObject.GetComponentInParent<TankController2D>();
+        if (player != null)
         {
-            collision.gameObject.GetComponent<TankController2D>().health -= damage;
+            player.health -= damage;
         }
-        if(collision.gameObject.tag == "Ai")
+
+        // Damage AI
+        AIEnemyShooter ai = collision.gameObject.GetComponentInParent<AIEnemyShooter>();
+        if (ai != null)
         {
-            collision.gameObject.GetComponent<AIEnemyShooter>().health -= damage;
+            ai.health -= damage;
         }
-        if(collision.gameObject.tag == "Glual")
+
+        // Damage Glual
+        Glual glual = collision.gameObject.GetComponentInParent<Glual>();
+        if (glual != null)
         {
-            collision.gameObject.GetComponent<Glual>().health -= damage;
+            glual.health -= damage;
         }
+
+        // Play hit sound
         audioSource.enabled = true;
+
+        // Stop bullet movement & physics
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        rb.freezeRotation = true;
         rb.bodyType = RigidbodyType2D.Kinematic;
-        GetComponent<CircleCollider2D>().enabled = false;
-        StartCoroutine(DestoryTheBullte());
-        animator.SetBool("Exposion", true);
+
+        // Disable collider to prevent further collisions
+        CircleCollider2D collider = GetComponent<CircleCollider2D>();
+        if (collider != null)
+            collider.enabled = false;
+
+        // Play explosion animation
+        if (animator != null)
+            animator.SetBool("Exposion", true);
+
+        // Start delayed destroy coroutine
+        StartCoroutine(DestroyTheBullet());
     }
 
-    IEnumerator DestoryTheBullte()
+    IEnumerator DestroyTheBullet()
     {
-        yield return new WaitForSeconds(0.30f);
-        Destroy(gameObject);
-    }
+        yield return new WaitForSeconds(0.3f);
 
-   
+        // Use PhotonNetwork.Destroy so all clients remove bullet
+        if (photonView.IsMine)
+        {
+            Photon.Pun.PhotonNetwork.Destroy(gameObject);
+        }
+    }
 }

@@ -1,20 +1,21 @@
+using Photon.Pun;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PickUp : MonoBehaviour
+public class PickUp : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
     public GameObject prefab; // This is the bullet or item prefab
-
-    private void Start()
+     public List<GameObject> allBulletPrefab;
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
+        int index = (int)photonView.InstantiationData[0];
+        prefab = allBulletPrefab[index];
+
         if (prefab.GetComponentInChildren<SpriteRenderer>() != null)
-        {
-        GetComponent<SpriteRenderer>().sprite= prefab.GetComponentInChildren<SpriteRenderer>().sprite;
-        }
+            GetComponent<SpriteRenderer>().sprite = prefab.GetComponentInChildren<SpriteRenderer>().sprite;
         else
-        {
             GetComponent<SpriteRenderer>().sprite = prefab.GetComponent<SpriteRenderer>().sprite;
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

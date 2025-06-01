@@ -4,8 +4,9 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using Unity.Cinemachine;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using Photon.Pun;
 
-public class TankSwitcher : MonoBehaviour
+public class TankSwitcher : MonoBehaviour 
 {
     public GameObject currentTank;
     
@@ -19,8 +20,13 @@ public class TankSwitcher : MonoBehaviour
     GameObject ObstclesUi;
     GameObject SpeedUi;
 
+   
+
     public void SwitchTank(GameObject tankPrefab)
     {
+
+
+        
 
         Vector3 currentPos = currentTank.transform.position;
         Quaternion currentRot = currentTank.transform.rotation;
@@ -31,12 +37,12 @@ public class TankSwitcher : MonoBehaviour
          int AiRobots = currentTank.GetComponent<TankController2D>().AiRobots; 
          int obstcles = currentTank.GetComponent<TankController2D>().obstcles; 
          int TreeHide = currentTank.GetComponent<TankController2D>().TreeHide; 
-         int SpeedBoast = currentTank.GetComponent<TankController2D>().SpeedBoast; 
-    // Destroy old tank
-    Destroy(currentTank);
+         int SpeedBoast = currentTank.GetComponent<TankController2D>().SpeedBoast;
+        // Destroy old tank
+        PhotonNetwork.Destroy(currentTank);
 
         //  Instantiate a new tank instance
-        GameObject newTank = Instantiate(tankPrefab, currentPos, currentRot);
+        GameObject newTank = PhotonNetwork.Instantiate(tankPrefab.name, currentPos, currentRot);
         currentTank = newTank;
 
         // Reassign joystick references

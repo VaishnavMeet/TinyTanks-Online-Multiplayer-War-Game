@@ -1,29 +1,40 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Photon.Pun;
 
-public class MistryBox : MonoBehaviour
+public class MistryBox : MonoBehaviourPunCallbacks
 {
-    GameObject gamemanager;
-    public List<GameObject> players; // List of all tank prefabs
+    public List<GameObject> players;
     private int playerNo;
+    private TankSwitcher tankSwitcher;
 
     void Start()
     {
-       gamemanager= GameObject.FindWithTag("GameManager");
+        GameObject gameManager = GameObject.FindWithTag("GameManager");
+        if (gameManager != null)
+            tankSwitcher = gameManager.GetComponent<TankSwitcher>();
+
         playerNo = Random.Range(0, players.Count);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check if the colliding object has a TankSwitcher component
-        TankSwitcher switcher = gamemanager.GetComponent<TankSwitcher>();
-        if (switcher != null)
+        PhotonView view = collision.GetComponent<PhotonView>();
+        if (view != null && view.IsMine && tankSwitcher != null)
         {
-            // Call SwitchTank with a random player prefab
-            switcher.SwitchTank(players[playerNo]);
+            tankSwitcher.SwitchTank(players[playerNo]);
 
-            // Optional: destroy or deactivate the box after use
-            Destroy(gameObject);
+            // Ask MasterClient to destroy this box
+            photonView.RPC("DestroyBox", RpcTarget.MasterClient);
+        }
+    }
+
+    [PunRPC]
+    void DestroyBox()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(gameObject);
         }
     }
 }
